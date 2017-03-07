@@ -55,6 +55,7 @@ if __name__ == '__main__':
 
     IGNORE_INITIAL_JOBS = True
     job_query = JOB_QUERY_LOW_END
+    NOTIFICATION_FILE = 'notification.wav'
 
     client = get_client()
     prev_jobs = set()
@@ -66,7 +67,8 @@ if __name__ == '__main__':
 
     while True:
         # Get all latest jobs
-        print '\nGetting Jobs...\n'
+        print '\nGetting Jobs at {} ...\n'.format(
+            datetime.now().strftime('%H:%M'))
         jobs = client.provider_v2.search_jobs(job_query)
         current_jobs = set()
 
@@ -81,11 +83,12 @@ if __name__ == '__main__':
             if uid not in prev_jobs:
 
                 prev_jobs.add(uid)
-                os.system('aplay notification.wav')
+                os.system('aplay {}'.format(NOTIFICATION_FILE))
                 print ('Time : {}\nJob Title : {}\nURL : {}\n'.format(
                     datetime.now().strftime('%H:%M'),
                     job['title'], job['url']
                 ))
+                webbrowser.open(url=job['url'], autoraise=True, new=2)
 
         prev_jobs = current_jobs
         # 1.5 minutes rest
